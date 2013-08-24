@@ -1,0 +1,73 @@
+<modification>
+    <id>Add Category additional description</id>
+    <version>1.0.0</version>
+    <vqmver>2.2</vqmver>
+    <author><![CDATA[<a href="http://teslitsky.info">Dmitry Teslitsky</a>]]></author>
+
+    <file name="admin/language/russian/catalog/category.php">
+        <operation error="log">
+            <search position="before"><![CDATA[$_['entry_description']]]></search>
+            <add><![CDATA[$_['entry_description2'] = 'SEO Описание:';]]></add>
+        </operation>
+    </file>
+    <file name="admin/language/english/catalog/product.php">
+        <operation error="log">
+            <search position="before"><![CDATA[$_['entry_description']]]></search>
+            <add><![CDATA[$_['entry_description2'] = 'SEO Description:';]]></add>
+        </operation>
+    </file>
+
+    <file name="admin/view/template/catalog/category_form.tpl">
+        <operation error="log">
+            <search position="after"><![CDATA[<td><textarea name="category_description[<?php echo $language['language_id']; ?>][description]" id="description<?php echo $language['language_id']; ?>"><?php echo isset($category_description[$language['language_id']]) ? $category_description[$language['language_id']]['description'] : ''; ?></textarea></td>]]></search>
+            <add><![CDATA[
+                </tr><tr>
+                <td><?php echo $entry_description2; ?></<td>
+                <td><textarea name="category_description[<?php echo $language['language_id']; ?>][description2]" id="description<?php echo $language['language_id']; ?>2"><?php echo isset($category_description[$language['language_id']]) ? $category_description[$language['language_id']]['description2'] : ''; ?></textarea></td>
+                </tr>
+            ]]></add>
+        </operation>
+        <operation error="log">
+            <search position="after"><![CDATA[<script type="text/javascript" src="view/javascript/ckeditor/ckeditor.js"></script>]]></search>
+            <add><![CDATA[
+                <script>
+                <?php foreach ($languages as $language) { ?>
+                CKEDITOR.replace('description<?php echo $language['language_id']; ?>2', {
+                    filebrowserBrowseUrl: 'index.php?route=common/filemanager&token=<?php echo $token; ?>',
+                    filebrowserImageBrowseUrl: 'index.php?route=common/filemanager&token=<?php echo $token; ?>',
+                    filebrowserFlashBrowseUrl: 'index.php?route=common/filemanager&token=<?php echo $token; ?>',
+                    filebrowserUploadUrl: 'index.php?route=common/filemanager&token=<?php echo $token; ?>',
+                    filebrowserImageUploadUrl: 'index.php?route=common/filemanager&token=<?php echo $token; ?>',
+                    filebrowserFlashUploadUrl: 'index.php?route=common/filemanager&token=<?php echo $token; ?>'
+                });
+                <?php } ?>
+                </script>
+            ]]></add>
+        </operation>
+    </file>
+
+    <file name="admin/controller/catalog/category.php">
+        <operation error="log">
+            <search position="after"><![CDATA[$this->data['entry_description']]]></search>
+            <add><![CDATA[$this->data['entry_description2'] = $this->language->get('entry_description2');]]></add>
+        </operation>
+    </file>
+
+    <file name="admin/model/catalog/category.php">
+        <operation error="log">
+            <search position="before"><![CDATA['description'      => $result['description']]]></search>
+            <add><![CDATA['description2'      => $result['description2'],]]></add>
+        </operation>
+        <operation error="log">
+            <search position="replace"><![CDATA[$this->db->query("INSERT INTO " . DB_PREFIX . "category_description SET category_id = '" . (int)$category_id . "', language_id = '" . (int)$language_id . "', name = '" . $this->db->escape($value['name']) . "', meta_keyword = '" . $this->db->escape($value['meta_keyword']) . "', meta_description = '" . $this->db->escape($value['meta_description']) . "', description = '" . $this->db->escape($value['description']) . "', seo_title = '" . $this->db->escape($value['seo_title']) . "', seo_h1 = '" . $this->db->escape($value['seo_h1']) . "'");]]></search>
+            <add><![CDATA[$this->db->query("INSERT INTO " . DB_PREFIX . "category_description SET category_id = '" . (int)$category_id . "', language_id = '" . (int)$language_id . "', name = '" . $this->db->escape($value['name']) . "', meta_keyword = '" . $this->db->escape($value['meta_keyword']) . "', meta_description = '" . $this->db->escape($value['meta_description']) . "', description = '" . $this->db->escape($value['description']) . "', description2 = '" . $this->db->escape($value['description2']) . "', seo_title = '" . $this->db->escape($value['seo_title']) . "', seo_h1 = '" . $this->db->escape($value['seo_h1']) . "'");]]></add>
+        </operation>
+    </file>
+
+    <file name="catalog/controller/product/category.php">
+        <operation error="log">
+            <search position="before"><![CDATA[$this->data['description'] = html_entity_decode($category_info['description'], ENT_QUOTES, 'UTF-8');]]></search>
+            <add><![CDATA[$this->data['description2'] = html_entity_decode($category_info['description2'], ENT_QUOTES, 'UTF-8');]]></add>
+        </operation>
+    </file>
+</modification>
